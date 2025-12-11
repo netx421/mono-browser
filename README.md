@@ -59,7 +59,7 @@ The included **installation script** will automatically acquire all above compon
 Retrieve system from secure repository:
 
 ```bash
-git clone https://github.com/REPLACE_WITH_YOUR_REPO/colossus-nan
+git clone https://github.com/netx421/colossus-nan
 cd colossus-nan
 Run supervised installation:
 
