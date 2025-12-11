@@ -83,7 +83,7 @@ If installation fails, report incident under Protocol Omega-4.
 
 Launch the Network Access Node:
 
-./nan
+./COLOSSUS-NAN
 
 
 Default bindings:
