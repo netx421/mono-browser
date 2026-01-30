@@ -1,0 +1,60 @@
+// src/main.cpp — Retro Mono Browser entry point (GTK3 + WebKit2GTK)
+
+#include <gtk/gtk.h>
+#include "browser.h"
+
+static void load_app_css()
+{
+    GtkCssProvider* provider = gtk_css_provider_new();
+    GError* error = nullptr;
+
+    // Relative path (run from project root)
+    const char* css_path = "resources/gtk-mono.css";
+    gtk_css_provider_load_from_path(provider, css_path, &error);
+
+    if (error) {
+        g_printerr("CSS load failed (%s): %s\n", css_path, error->message);
+        g_error_free(error);
+    } else {
+        GdkScreen* screen = gdk_screen_get_default();
+        gtk_style_context_add_provider_for_screen(
+            screen,
+            GTK_STYLE_PROVIDER(provider),
+            GTK_STYLE_PROVIDER_PRIORITY_APPLICATION
+        );
+    }
+
+    g_object_unref(provider);
+}
+
+static void on_startup(GtkApplication*, gpointer)
+{
+    load_app_css();
+}
+
+static void on_activate(GtkApplication* app, gpointer)
+{
+    auto* b = new Browser(app);
+
+    // When the window is destroyed, delete the Browser instance
+    g_signal_connect(b->window_widget(), "destroy",
+                     G_CALLBACK(+[](GtkWidget*, gpointer data) {
+                         delete static_cast<Browser*>(data);
+                     }),
+                     b);
+
+    b->show();
+}
+
+int main(int argc, char** argv)
+{
+    GtkApplication* app =
+        gtk_application_new("tech.will.mono_browser", G_APPLICATION_DEFAULT_FLAGS);
+
+    g_signal_connect(app, "startup", G_CALLBACK(on_startup), nullptr);
+    g_signal_connect(app, "activate", G_CALLBACK(on_activate), nullptr);
+
+    int status = g_application_run(G_APPLICATION(app), argc, argv);
+    g_object_unref(app);
+    return status;
+}

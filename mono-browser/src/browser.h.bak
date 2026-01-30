@@ -1,0 +1,63 @@
+#ifndef MONO_BROWSER_H
+#define MONO_BROWSER_H
+
+#include <string>
+#include <vector>
+
+extern "C" {
+#include <gtk/gtk.h>
+#include <webkit2/webkit2.h>
+}
+
+class Browser {
+public:
+    explicit Browser(GtkApplication* app);
+    ~Browser();
+
+    void show();
+    GtkWidget* window_widget() const { return window_; }
+
+private:
+    struct Tab {
+        GtkWidget* scrolled = nullptr;
+        WebKitWebView* view = nullptr;
+        GtkWidget* label = nullptr;
+    };
+
+    GtkApplication* app_ = nullptr;
+    GtkWidget* window_ = nullptr;
+    GtkWidget* notebook_ = nullptr;
+    GtkWidget* bottom_bar_ = nullptr;
+    GtkWidget* url_entry_ = nullptr;
+
+    GtkWidget* back_button_ = nullptr;
+    GtkWidget* forward_button_ = nullptr;
+    GtkWidget* home_button_ = nullptr;
+    GtkWidget* new_tab_button_ = nullptr;
+
+    WebKitSettings* settings_ = nullptr;
+
+    std::vector<Tab> tabs_;
+    int current_tab_ = -1;
+
+    void setup_ui();
+    void new_tab(const std::string& uri);
+    WebKitWebView* current_view();
+
+    void go_back();
+    void go_forward();
+    void go_home();
+    void reload();
+
+    void on_url_activate();
+    void on_tab_switched(guint page);
+    void on_load_changed(WebKitWebView* view, WebKitLoadEvent event);
+    gboolean on_key_press(GdkEventKey* event);
+
+    static gboolean s_key_press(GtkWidget*, GdkEventKey* event, gpointer user_data);
+    static void s_url_activate(GtkEntry*, gpointer user_data);
+    static void s_tab_switched(GtkNotebook*, GtkWidget*, guint page, gpointer user_data);
+    static void s_load_changed(WebKitWebView* view, WebKitLoadEvent event, gpointer user_data);
+};
+
+#endif

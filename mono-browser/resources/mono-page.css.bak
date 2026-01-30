@@ -1,0 +1,16 @@
+/* resources/mono-page.css — global grayscale overlay */
+
+html {
+  /* Global hammer: most content becomes grayscale */
+  filter: grayscale(100%) contrast(1.10) brightness(0.95) !important;
+  background: #000 !important;
+}
+
+body {
+  background: #000 !important;
+}
+
+/* Make sure media is also forced */
+img, video, canvas, svg {
+  filter: grayscale(100%) contrast(1.10) brightness(0.95) !important;
+}
